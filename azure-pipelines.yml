@@ -1,0 +1,53 @@
+trigger:
+- main
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+variables:
+  storageAccountName: 'mystorageaccount'
+  containerName: '$web'
+  resourceGroupName: 'myResourceGroup'
+  servicePrincipalId: $(servicePrincipalId)
+  servicePrincipalKey: $(servicePrincipalKey)
+  tenantId: $(tenantId)
+
+
+stages:
+- stage: Build
+  jobs:
+  - job: Build
+    steps:
+    - task: NodeTool@0
+      inputs:
+        versionSpec: '12.x'
+        checkLatest: true
+
+    - script: |
+        npm install
+        npm run build
+      displayName: 'npm install and build'
+
+    - task: PublishBuildArtifacts@1
+      inputs:
+        PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+        ArtifactName: 'drop'
+        publishLocation: 'Container'
+
+- stage: Deploy
+  dependsOn: Build
+  jobs:
+  - deployment: Deploy
+    environment: 'Production'
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - download: current
+            artifact: drop
+
+          - script: |
+              az login --service-principal -u $(servicePrincipalId) -p $(servicePrincipalKey) --tenant $(tenantId)
+              az storage blob delete-batch -s $(containerName) --account-name $(storageAccountName)
+              az storage blob upload-batch -d $(containerName) -s $(Pipeline.Workspace)/drop/build --account-name $(storageAccountName)
+            displayName: 'Upload to Azure Blob Storage'
