@@ -29,7 +29,7 @@ stages:
 
     - script: |
         echo "Listing build output directory..."
-        ls -la $(Build.ArtifactStagingDirectory)
+        ls -la $(Build.ArtifactStagingDirectory)/build
       displayName: 'List build output directory'
 
     - task: PublishBuildArtifacts@1
