@@ -23,9 +23,6 @@ stages:
         npm install
         npm run build
       displayName: 'npm install and build'
-    - script: |
-        ls -la $(Build.ArtifactStagingDirectory)/dist
-      displayName: 'List build output directory'
 
     - task: PublishBuildArtifacts@1
       inputs:
