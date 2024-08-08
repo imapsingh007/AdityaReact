@@ -8,10 +8,9 @@ variables:
   storageAccountName: 'mystorageaccount'
   containerName: '$web'
   resourceGroupName: 'myResourceGroup'
-  servicePrincipalId: $(servicePrincipalId)
-  servicePrincipalKey: $(servicePrincipalKey)
-  tenantId: $(tenantId)
-
+  servicePrincipalId: 'your-service-principal-id'
+  servicePrincipalKey: 'your-service-principal-key'
+  tenantId: 'your-tenant-id'
 
 stages:
 - stage: Build
