@@ -8,6 +8,9 @@ variables:
   storageAccountName: 'mystorageaccount'
   containerName: '$web'
   resourceGroupName: 'myResourceGroup'
+  servicePrincipalId: $(servicePrincipalId)
+  servicePrincipalKey: $(servicePrincipalKey)
+  tenantId: $(tenantId)
 
 stages:
 - stage: Build
@@ -23,6 +26,11 @@ stages:
         npm install
         npm run build
       displayName: 'npm install and build'
+
+    - script: |
+        echo "Listing build output directory..."
+        ls -la $(Build.ArtifactStagingDirectory)
+      displayName: 'List build output directory'
 
     - task: PublishBuildArtifacts@1
       inputs:
