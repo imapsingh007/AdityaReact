@@ -5,12 +5,12 @@ pool:
   vmImage: 'ubuntu-latest'
 
 variables:
-  storageAccountName: $(storageAccountName)
-  containerName: $(containerName)
-  resourceGroupName: $(resourceGroupName)
-  servicePrincipalId: $(servicePrincipalId)
-  servicePrincipalKey: $(servicePrincipalKey)
-  tenantId: $(tenantId)
+  storageAccountName: '$(storageAccountName)'  # Ensure these are correctly set as pipeline variables
+  containerName: '$(containerName)'
+  resourceGroupName: '$(resourceGroupName)'
+  servicePrincipalId: '$(servicePrincipalId)'
+  servicePrincipalKey: '$(servicePrincipalKey)'
+  tenantId: '$(tenantId)'
 
 stages:
 - stage: Build
@@ -54,6 +54,8 @@ stages:
             artifact: drop
 
           - script: |
+              echo "Storage Account Name: $(storageAccountName)"
+              echo "Container Name: $(containerName)"
               az login --service-principal -u $(servicePrincipalId) -p $(servicePrincipalKey) --tenant $(tenantId)
               az storage blob delete-batch --source $(containerName) --account-name $(storageAccountName)
               az storage blob upload-batch --destination $(containerName) --source $(Pipeline.Workspace)/drop/build --account-name $(storageAccountName)
