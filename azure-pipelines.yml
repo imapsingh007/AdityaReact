@@ -8,9 +8,6 @@ variables:
   storageAccountName: 'mystorageaccount'
   containerName: '$web'
   resourceGroupName: 'myResourceGroup'
-  servicePrincipalId: $(servicePrincipalId)
-  servicePrincipalKey: $(servicePrincipalKey)
-  tenantId: $(tenantId)
 
 stages:
 - stage: Build
@@ -23,18 +20,21 @@ stages:
         checkLatest: true
 
     - script: |
+        echo "Source Directory: $(Build.SourcesDirectory)"
         npm install
         npm run build
-      displayName: 'npm install and build'
+      displayName: 'Install and Build'
 
     - script: |
-        echo "Listing build output directory..."
-        ls -la $(Build.ArtifactStagingDirectory)/build
-      displayName: 'List build output directory'
+        echo "Listing contents of $(Build.SourcesDirectory)..."
+        ls -la $(Build.SourcesDirectory)
+        echo "Listing contents of $(Build.SourcesDirectory)/build..."
+        ls -la $(Build.SourcesDirectory)/build
+      displayName: 'List Source and Build Directory Contents'
 
     - task: PublishBuildArtifacts@1
       inputs:
-        PathtoPublish: '$(Build.ArtifactStagingDirectory)/build'
+        PathtoPublish: '$(Build.SourcesDirectory)/build'
         ArtifactName: 'drop'
         publishLocation: 'Container'
 
@@ -53,5 +53,5 @@ stages:
           - script: |
               az login --service-principal -u $(servicePrincipalId) -p $(servicePrincipalKey) --tenant $(tenantId)
               az storage blob delete-batch -s $(containerName) --account-name $(storageAccountName)
-              az storage blob upload-batch -d $(containerName) -s $(Pipeline.Workspace)/drop/build --account-name $(storageAccountName)
+              az storage blob upload-batch -d $(containerName) -s $(Pipeline.Workspace)/drop --account-name $(storageAccountName)
             displayName: 'Upload to Azure Blob Storage'
