@@ -5,9 +5,9 @@ pool:
   vmImage: 'ubuntu-latest'
 
 variables:
-  storageAccountName: 'mystorageaccount'
-  containerName: '$web'
-  resourceGroupName: 'myResourceGroup'
+  storageAccountName: $(storageAccountName)
+  containerName: $(containerName)
+  resourceGroupName: $(resourceGroupName)
   servicePrincipalId: $(servicePrincipalId)
   servicePrincipalKey: $(servicePrincipalKey)
   tenantId: $(tenantId)
