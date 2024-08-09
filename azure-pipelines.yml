@@ -8,6 +8,9 @@ variables:
   storageAccountName: 'mystorageaccount'
   containerName: '$web'
   resourceGroupName: 'myResourceGroup'
+  servicePrincipalId: $(servicePrincipalId)
+  servicePrincipalKey: $(servicePrincipalKey)
+  tenantId: $(tenantId)
 
 stages:
 - stage: Build
@@ -52,6 +55,6 @@ stages:
 
           - script: |
               az login --service-principal -u $(servicePrincipalId) -p $(servicePrincipalKey) --tenant $(tenantId)
-              az storage blob delete-batch -s $(containerName) --account-name $(storageAccountName)
-              az storage blob upload-batch -d $(containerName) -s $(Pipeline.Workspace)/drop --account-name $(storageAccountName)
+              az storage blob delete-batch --source $(containerName) --account-name $(storageAccountName)
+              az storage blob upload-batch --destination $(containerName) --source $(Pipeline.Workspace)/drop/build --account-name $(storageAccountName)
             displayName: 'Upload to Azure Blob Storage'
