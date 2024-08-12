@@ -5,12 +5,12 @@ pool:
   vmImage: 'ubuntu-latest'
 
 variables:
-  storageAccountName: '$(storageAccountName)'  # Ensure these are correctly set as pipeline variables
-  containerName: '$(containerName)'
-  resourceGroupName: '$(resourceGroupName)'
-  servicePrincipalId: '$(servicePrincipalId)'
-  servicePrincipalKey: '$(servicePrincipalKey)'
-  tenantId: '$(tenantId)'
+  storageAccountName: $(storageAccountName)  # Use $(variableName) without quotes
+  containerName: $(containerName)
+  resourceGroupName: $(resourceGroupName)
+  servicePrincipalId: $(servicePrincipalId)
+  servicePrincipalKey: $(servicePrincipalKey)
+  tenantId: $(tenantId)
 
 stages:
 - stage: Build
