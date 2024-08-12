@@ -10,7 +10,7 @@ variables:
   resourceGroupName: 'your-resource-group-name'
   servicePrincipalId: 'your-service-principal-id'
   servicePrincipalKey: 'your-service-principal-key'
-  tenantId: 'your-tenant-id'
+  tenantId: 65b9a124-f316-4b03-bec1-0a1e15a554e4
 
 stages:
 - stage: Build
