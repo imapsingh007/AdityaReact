@@ -5,12 +5,12 @@ pool:
   vmImage: 'ubuntu-latest'
 
 variables:
-  storageAccountName: $(storageAccountName)  # Use $(variableName) without quotes
-  containerName: $(containerName)
-  resourceGroupName: $(resourceGroupName)
-  servicePrincipalId: $(servicePrincipalId)
-  servicePrincipalKey: $(servicePrincipalKey)
-  tenantId: $(tenantId)
+  storageAccountName: 'your-storage-account-name'  # Ensure these are correctly set
+  containerName: 'your-container-name'
+  resourceGroupName: 'your-resource-group-name'
+  servicePrincipalId: 'your-service-principal-id'
+  servicePrincipalKey: 'your-service-principal-key'
+  tenantId: 'your-tenant-id'
 
 stages:
 - stage: Build
@@ -56,7 +56,18 @@ stages:
           - script: |
               echo "Storage Account Name: $(storageAccountName)"
               echo "Container Name: $(containerName)"
+              echo "Service Principal ID: $(servicePrincipalId)"
+              echo "Tenant ID: $(tenantId)"
+
               az login --service-principal -u $(servicePrincipalId) -p $(servicePrincipalKey) --tenant $(tenantId)
+              
+              # Debugging to ensure correct variables
+              echo "Deleting blobs from container: $(containerName) in storage account: $(storageAccountName)"
+              
               az storage blob delete-batch --source $(containerName) --account-name $(storageAccountName)
+              
+              # Debugging to ensure correct path
+              echo "Uploading files from path: $(Pipeline.Workspace)/drop/build to container: $(containerName)"
+              
               az storage blob upload-batch --destination $(containerName) --source $(Pipeline.Workspace)/drop/build --account-name $(storageAccountName)
             displayName: 'Upload to Azure Blob Storage'
