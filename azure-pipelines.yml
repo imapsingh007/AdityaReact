@@ -61,13 +61,20 @@ stages:
 
               az login --service-principal -u $(servicePrincipalId) -p $(servicePrincipalKey) --tenant $(tenantId)
               
-              # Debugging to ensure correct variables
+              if [ $? -ne 0 ]; then
+                  echo "Azure login failed. Check your credentials."
+                  exit 1
+              fi
+              
               echo "Deleting blobs from container: $(containerName) in storage account: $(storageAccountName)"
               
               az storage blob delete-batch --source $(containerName) --account-name $(storageAccountName)
               
-              # Debugging to ensure correct path
-              echo "Uploading files from path: $(Pipeline.Workspace)/drop/build to container: $(containerName)"
-              
-              az storage blob upload-batch --destination $(containerName) --source $(Pipeline.Workspace)/drop/build --account-name $(storageAccountName)
+              if [ -d "$(Pipeline.Workspace)/drop/build" ]; then
+                  echo "Build directory exists, proceeding with upload."
+                  az storage blob upload-batch --destination $(containerName) --source $(Pipeline.Workspace)/drop/build --account-name $(storageAccountName)
+              else
+                  echo "Build directory does not exist, aborting."
+                  exit 1
+              fi
             displayName: 'Upload to Azure Blob Storage'
