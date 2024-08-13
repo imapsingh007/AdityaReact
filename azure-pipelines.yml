@@ -5,13 +5,12 @@ pool:
   vmImage: 'ubuntu-latest'
 
 variables:
-  storageAccountName: $(storageAccountName)  # Use $(variableName) without quotes
-  containerName: $(containerName)
-  resourceGroupName: $(resourceGroupName)
-  servicePrincipalId: $(servicePrincipalId)
-  servicePrincipalKey: $(servicePrincipalKey)
-  tenantId: $(tenantId)
-
+  storageAccountName: '$(storageAccountName)'
+  containerName: '$(containerName)'
+  resourceGroupName: '$(resourceGroupName)'
+  servicePrincipalId: '$(servicePrincipalId)'
+  servicePrincipalKey: '$(servicePrincipalKey)'
+  tenantId: '$(tenantId)'
 
 stages:
 - stage: Build
@@ -54,28 +53,10 @@ stages:
           - download: current
             artifact: drop
 
-          - script: |
-              echo "Storage Account Name: $(storageAccountName)"
-              echo "Container Name: $(containerName)"
-              echo "Service Principal ID: $(servicePrincipalId)"
-              echo "Tenant ID: $(tenantId)"
-
-              az login --service-principal -u $(servicePrincipalId) -p $(servicePrincipalKey) --tenant $(tenantId)
-              
-              if [ $? -ne 0 ]; then
-                  echo "Azure login failed. Check your credentials."
-                  exit 1
-              fi
-              
-              echo "Deleting blobs from container: $(containerName) in storage account: $(storageAccountName)"
-              
-              az storage blob delete-batch --source $(containerName) --account-name $(storageAccountName)
-              
-              if [ -d "$(Pipeline.Workspace)/drop/build" ]; then
-                  echo "Build directory exists, proceeding with upload."
-                  az storage blob upload-batch --destination $(containerName) --source $(Pipeline.Workspace)/drop/build --account-name $(storageAccountName)
-              else
-                  echo "Build directory does not exist, aborting."
-                  exit 1
-              fi
-            displayName: 'Upload to Azure Blob Storage'
+          - task: AzureFileCopy@6
+            inputs:
+              SourcePath: '$(Pipeline.Workspace)/drop'
+              azureSubscription: 'adityaconnection'
+              Destination: 'AzureBlob'
+              storage: 'adityastorage123456'
+              ContainerName: 'adityacontainer'
