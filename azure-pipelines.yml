@@ -25,7 +25,7 @@ stages:
     - script: |
         echo "Source Directory: $(Build.SourcesDirectory)"
         npm install
-        npm run build
+        npm run build || exit 1
       displayName: 'Install and Build'
 
     - script: |
