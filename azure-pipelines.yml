@@ -5,12 +5,13 @@ pool:
   vmImage: 'ubuntu-latest'
 
 variables:
-  storageAccountName: 'your-storage-account-name'  # Ensure these are correctly set
-  containerName: 'your-container-name'
-  resourceGroupName: 'your-resource-group-name'
-  servicePrincipalId: 2b75ff7c-ce3f-4d6e-b2ac-3b2caa9cd3de
-  servicePrincipalKey: 'your-service-principal-key'
-  tenantId: 65b9a124-f316-4b03-bec1-0a1e15a554e4
+  storageAccountName: $(storageAccountName)  # Use $(variableName) without quotes
+  containerName: $(containerName)
+  resourceGroupName: $(resourceGroupName)
+  servicePrincipalId: $(servicePrincipalId)
+  servicePrincipalKey: $(servicePrincipalKey)
+  tenantId: $(tenantId)
+
 
 stages:
 - stage: Build
