@@ -2,15 +2,15 @@ trigger:
 - main
 
 pool:
-  vmImage: 'windows-latest'  # Changed to a Windows-based agent
+  vmImage: 'windows-latest'  # Use a Windows-based agent
 
 variables:
-  storageAccountName: '$(storageAccountName)'
-  containerName: '$(containerName)'
-  resourceGroupName: '$(resourceGroupName)'
-  servicePrincipalId: '$(servicePrincipalId)'
-  servicePrincipalKey: '$(servicePrincipalKey)'
-  tenantId: '$(tenantId)'
+  storageAccountName: 'your-storage-account-name'
+  containerName: 'your-container-name'
+  resourceGroupName: 'your-resource-group-name'
+  servicePrincipalId: 'your-service-principal-id'
+  servicePrincipalKey: 'your-service-principal-key'
+  tenantId: 'your-tenant-id'
 
 stages:
 - stage: Build
@@ -32,7 +32,7 @@ stages:
         echo "Listing contents of $(Build.SourcesDirectory)..."
         ls -la $(Build.SourcesDirectory)
         echo "Listing contents of $(Build.SourcesDirectory)/build..."
-        ls -la $(Build.SourcesDirectory)/build
+        ls -la $(Build.SourcesDirectory)/build || echo "Build directory not found."
       displayName: 'List Source and Build Directory Contents'
 
     - task: PublishBuildArtifacts@1
