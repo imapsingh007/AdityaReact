@@ -23,21 +23,29 @@ stages:
         checkLatest: true
 
     - script: |
-        echo "Source Directory: $(Build.SourcesDirectory)"
+        echo "Installing dependencies..."
         npm install
-        npm run build || exit 1
+
+        echo "Running the build..."
+        npm run build || (echo "Build failed, no output generated." && exit 1)
       displayName: 'Install and Build'
 
     - script: |
         echo "Listing contents of $(Build.SourcesDirectory)..."
-        ls -la $(Build.SourcesDirectory)
-        echo "Listing contents of $(Build.SourcesDirectory)/build..."
-        ls -la $(Build.SourcesDirectory)/build || echo "Build directory not found."
+        dir $(Build.SourcesDirectory)
+        
+        echo "Listing contents of $(Build.SourcesDirectory)\build..."
+        if exist $(Build.SourcesDirectory)\build (
+            dir $(Build.SourcesDirectory)\build
+        ) else (
+            echo "Build directory not found."
+            exit /b 1
+        )
       displayName: 'List Source and Build Directory Contents'
 
     - task: PublishBuildArtifacts@1
       inputs:
-        PathtoPublish: '$(Build.SourcesDirectory)/build'
+        PathtoPublish: '$(Build.SourcesDirectory)\build'
         ArtifactName: 'drop'
         publishLocation: 'Container'
 
@@ -55,7 +63,7 @@ stages:
 
           - task: AzureFileCopy@6
             inputs:
-              SourcePath: '$(Pipeline.Workspace)/drop'
+              SourcePath: '$(Pipeline.Workspace)\drop'
               azureSubscription: 'adityaconnection'
               Destination: 'AzureBlob'
               storage: 'adityastorage123456'
