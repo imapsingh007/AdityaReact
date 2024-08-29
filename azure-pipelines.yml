@@ -6,6 +6,9 @@ trigger:
 pool:
   vmImage: 'ubuntu-latest'
 
+variables:
+  AZURE_STORAGE_ACCOUNT_KEY: $(azureStorageAccountKey)
+
 stages:
   - stage: Build
     jobs:
@@ -43,8 +46,8 @@ stages:
               scriptLocation: inlineScript
               inlineScript: |
                 echo "Cleaning up existing files in the \$web container..."
-                az storage blob delete-batch --account-name adityapstorage --account-key ${ secrets.AZURE_STORAGE_ACCOUNT_KEY } --source '$web'
+                az storage blob delete-batch --account-name adityapstorage --account-key $(AZURE_STORAGE_ACCOUNT_KEY) --source '$web'
 
                 echo "Uploading new build files to \$web container..."
-                az storage blob upload-batch --account-name adityapstorage --account-key ${ secrets.AZURE_STORAGE_ACCOUNT_KEY } --source $(Build.ArtifactStagingDirectory)/drop --destination '$web'
+                az storage blob upload-batch --account-name adityapstorage --account-key $(AZURE_STORAGE_ACCOUNT_KEY) --source $(Build.ArtifactStagingDirectory)/drop --destination '$web'
             displayName: 'Deploy to Azure Storage'
