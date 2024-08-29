@@ -6,9 +6,6 @@ trigger:
 pool:
   vmImage: 'ubuntu-latest'
 
-variables:
-  AZURE_STORAGE_ACCOUNT_KEY: $(azureStorageAccountKey)
-
 stages:
   - stage: Build
     jobs:
