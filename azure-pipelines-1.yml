@@ -1,0 +1,15 @@
+stages:
+- stage: Deploy
+  jobs:
+  - job: Deploy
+    pool:
+      vmImage: 'ubuntu-latest'
+    steps:
+    - task: AzureFileCopy@4
+      inputs:
+        SourcePath: '$(System.DefaultWorkingDirectory)/drop'
+        azureSubscription: '<Azure Subscription>'
+        Destination: 'AzureBlob'
+        storage: '<Storage Account Name>'
+        ContainerName: '$web'
+
