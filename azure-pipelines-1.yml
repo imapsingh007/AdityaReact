@@ -14,7 +14,7 @@ stages:
       inputs:
         buildType: 'specific'
         project: 'Tiwari-Cloud'  # Replace with your project name if not the current project
-        definition: 'imapsingh007.AdityaReact'  # Replace with your build pipeline name
+        definition: 'azure-pipelines.yml'  # Replace with your build pipeline name
         buildId: $(Build.BuildId)
         downloadType: 'single'
         artifactName: 'drop'
@@ -27,4 +27,3 @@ stages:
         Destination: 'AzureBlob'
         storage: 'adityapstorage'  # Replace with your Storage Account name
         ContainerName: '$web'
-        cleanTargetFolder: true
