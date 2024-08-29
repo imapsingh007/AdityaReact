@@ -32,8 +32,8 @@ stages:
       - job: Deploy
         steps:
           - script: |
-              echo "Listing contents of build artifact directory"
-              ls -R $(Pipeline.Workspace)/drop
+              echo "Listing contents of artifact staging directory"
+              ls -R $(Build.ArtifactStagingDirectory)
             displayName: 'List Build Artifact Contents'
 
           - task: AzureCLI@2
@@ -46,5 +46,5 @@ stages:
                 az storage blob delete-batch --account-name adityapstorage --source '$web'
 
                 echo "Uploading new build files to $web container..."
-                az storage blob upload-batch --account-name adityapstorage --source $(Pipeline.Workspace)/drop/build --destination '$web'
+                az storage blob upload-batch --account-name adityapstorage --source $(Build.ArtifactStagingDirectory)/drop --destination '$web'
             displayName: 'Deploy to Azure Storage'
