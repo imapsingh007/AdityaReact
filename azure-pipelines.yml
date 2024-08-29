@@ -32,9 +32,26 @@ stages:
       - job: Deploy
         steps:
           - script: |
+              echo "Listing contents of sources directory"
+              ls -R $(Build.SourcesDirectory)
+            displayName: 'List Sources Directory Contents'
+
+          - script: |
               echo "Listing contents of artifact staging directory"
               ls -R $(Build.ArtifactStagingDirectory)
-            displayName: 'List Build Artifact Contents'
+            displayName: 'List Artifact Staging Directory Contents'
+
+          - script: |
+              echo "Printing environment variables"
+              printenv
+            displayName: 'Print Environment Variables'
+
+          - script: |
+              echo "Running a sample command to verify path"
+              mkdir -p $(Build.ArtifactStagingDirectory)/test
+              echo "Test file" > $(Build.ArtifactStagingDirectory)/test/testfile.txt
+              ls -R $(Build.ArtifactStagingDirectory)/test
+            displayName: 'Create and Verify Test Directory'
 
           - task: AzureCLI@2
             inputs:
