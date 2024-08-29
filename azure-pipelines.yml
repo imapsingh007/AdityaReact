@@ -38,7 +38,7 @@ stages:
 
           - script: |
               echo "Listing contents of artifact staging directory"
-              ls -R $(Build.ArtifactStagingDirectory)
+              ls -R $(Build.ArtifactStagingDirectory)/drop
             displayName: 'List Artifact Staging Directory Contents'
 
           - script: |
