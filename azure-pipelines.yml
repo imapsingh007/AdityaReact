@@ -25,18 +25,4 @@ stages:
               ArtifactName: 'drop'
             displayName: 'Publish Build Artifacts'
 
-  - stage: Deploy
-    dependsOn: Build
-    jobs:
-      - job: Deploy
-        pool:
-          vmImage: 'ubuntu-latest'
-        steps:
-          - task: AzureFileCopy@4
-            inputs:
-              SourcePath: '$(System.DefaultWorkingDirectory)/drop'
-              azureSubscription: 'Pay-As-You-Go'
-              Destination: 'AzureBlob'
-              storage: 'adityapstorage'
-              ContainerName: '$web'
 
