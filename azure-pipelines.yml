@@ -53,6 +53,13 @@ stages:
               ls -R $(Build.ArtifactStagingDirectory)/test
             displayName: 'Create and Verify Test Directory'
 
+          - script: |
+              echo "Debugging deployment configuration"
+              echo "AZURE_STORAGE_ACCOUNT_KEY: $(AZURE_STORAGE_ACCOUNT_KEY)"
+              echo "Account name: adityapstorage"
+              echo "Source directory: $(Build.ArtifactStagingDirectory)/drop"
+            displayName: 'Debug Deployment Configuration'
+
           - task: AzureCLI@2
             inputs:
               azureSubscription: 'adityanewconnection'
