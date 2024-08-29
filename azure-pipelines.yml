@@ -1,70 +1,42 @@
 trigger:
-- main
+  - main
 
 pool:
-  vmImage: 'windows-latest'  # Use a Windows-based agent
-
-variables:
-  storageAccountName: 'your-storage-account-name'
-  containerName: 'your-container-name'
-  resourceGroupName: 'your-resource-group-name'
-  servicePrincipalId: 'your-service-principal-id'
-  servicePrincipalKey: 'your-service-principal-key'
-  tenantId: 'your-tenant-id'
+  vmImage: 'ubuntu-latest'
 
 stages:
-- stage: Build
-  jobs:
-  - job: Build
-    steps:
-    - task: NodeTool@0
-      inputs:
-        versionSpec: '12.x'
-        checkLatest: true
-
-    - script: |
-        echo "Installing dependencies..."
-        npm install
-
-        echo "Running the build..."
-        npm run build || (echo "Build failed, no output generated." && exit 1)
-      displayName: 'Install and Build'
-
-    - script: |
-        echo "Listing contents of $(Build.SourcesDirectory)..."
-        dir $(Build.SourcesDirectory)
-        
-        echo "Listing contents of $(Build.SourcesDirectory)\build..."
-        if exist $(Build.SourcesDirectory)\build (
-            dir $(Build.SourcesDirectory)\build
-        ) else (
-            echo "Build directory not found."
-            exit /b 1
-        )
-      displayName: 'List Source and Build Directory Contents'
-
-    - task: PublishBuildArtifacts@1
-      inputs:
-        PathtoPublish: '$(Build.SourcesDirectory)\build'
-        ArtifactName: 'drop'
-        publishLocation: 'Container'
-
-- stage: Deploy
-  dependsOn: Build
-  jobs:
-  - deployment: Deploy
-    environment: 'Production'
-    strategy:
-      runOnce:
-        deploy:
-          steps:
-          - download: current
-            artifact: drop
-
-          - task: AzureFileCopy@6
+  - stage: Build
+    jobs:
+      - job: Build
+        steps:
+          - task: NodeTool@0
             inputs:
-              SourcePath: '$(Pipeline.Workspace)\drop'
-              azureSubscription: 'adityaconnection'
+              versionSpec: '14.x'
+            displayName: 'Install Node.js'
+
+          - script: |
+              npm install
+              npm run build
+            displayName: 'Build React App'
+
+          - task: PublishBuildArtifacts@1
+            inputs:
+              PathtoPublish: 'build'
+              ArtifactName: 'drop'
+            displayName: 'Publish Build Artifacts'
+
+  - stage: Deploy
+    dependsOn: Build
+    jobs:
+      - job: Deploy
+        pool:
+          vmImage: 'ubuntu-latest'
+        steps:
+          - task: AzureFileCopy@4
+            inputs:
+              SourcePath: '$(System.DefaultWorkingDirectory)/drop'
+              azureSubscription: 'Pay-As-You-Go'
               Destination: 'AzureBlob'
-              storage: 'adityastorage123456'
-              ContainerName: 'adityacontainer'
+              storage: 'adityapstorage'
+              ContainerName: '$web'
+
