@@ -37,6 +37,9 @@ stages:
               scriptType: bash
               scriptLocation: inlineScript
               inlineScript: |
+                echo "Cleaning up existing files in the \$web container..."
                 az storage blob delete-batch --account-name adityapstorage --source '$web'
-                az storage blob upload-batch --account-name adityapstorage --source $(Pipeline.Workspace)/drop --destination '$web'
+
+                echo "Uploading new build files to \$web container..."
+                az storage blob upload-batch --account-name adityapstorage --source $(Build.ArtifactStagingDirectory)/drop --destination '$web'
             displayName: 'Deploy to Azure Storage'
