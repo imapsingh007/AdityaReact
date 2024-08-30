@@ -31,44 +31,12 @@ stages:
     jobs:
       - job: Deploy
         steps:
-          - script: |
-              echo "Listing contents of sources directory"
-              ls -R $(Build.SourcesDirectory)
-            displayName: 'List Sources Directory Contents'
-
-          - script: |
-              echo "Listing contents of artifact staging directory"
-              ls -R $(Build.ArtifactStagingDirectory)/drop
-            displayName: 'List Artifact Staging Directory Contents'
-
-          - script: |
-              echo "Printing environment variables"
-              printenv
-            displayName: 'Print Environment Variables'
-
-          - script: |
-              echo "Running a sample command to verify path"
-              mkdir -p $(Build.ArtifactStagingDirectory)/test
-              echo "Test file" > $(Build.ArtifactStagingDirectory)/test/testfile.txt
-              ls -R $(Build.ArtifactStagingDirectory)/test
-            displayName: 'Create and Verify Test Directory'
-
-          - script: |
-              echo "Debugging deployment configuration"
-              echo "AZURE_STORAGE_ACCOUNT_KEY: $(AZURE_STORAGE_ACCOUNT_KEY)"
-              echo "Account name: adityapstorage"
-              echo "Source directory: $(Build.ArtifactStagingDirectory)/drop"
-            displayName: 'Debug Deployment Configuration'
-
           - task: AzureCLI@2
             inputs:
               azureSubscription: 'adityanewconnection'
               scriptType: bash
               scriptLocation: inlineScript
               inlineScript: |
-                echo "Cleaning up existing files in the \$web container..."
-                az storage blob delete-batch --account-name adityapstorage --account-key $(AZURE_STORAGE_ACCOUNT_KEY) --source '$web'
-
-                echo "Uploading new build files to \$web container..."
-                az storage blob upload-batch --account-name adityapstorage --account-key $(AZURE_STORAGE_ACCOUNT_KEY) --source $(Build.ArtifactStagingDirectory)/drop --destination '$web'
+                az storage blob delete-batch --account-name adityapstorage --source '$web'
+                az storage blob upload-batch --account-name adityapstorage --source $(Pipeline.Workspace)/drop --destination '$web'
             displayName: 'Deploy to Azure Storage'
