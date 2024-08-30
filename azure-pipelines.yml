@@ -31,13 +31,25 @@ stages:
     jobs:
       - job: Deploy
         steps:
+          - script: |
+              echo "Listing contents of artifact staging directory"
+              ls -R $(Build.ArtifactStagingDirectory)
+            displayName: 'List Artifact Staging Directory Contents'
+
           - task: AzureCLI@2
             inputs:
-              azureSubscription: $(AZURE_SUBSCRIPTION)
+              azureSubscription: 'adityanewconnection'
               scriptType: bash
               scriptLocation: inlineScript
               inlineScript: |
-                az storage blob upload-batch --account-name $(AZURE_STORAGE_ACCOUNT_NAME) --auth-mode key -d '$web' -s $(Build.ArtifactStagingDirectory)/drop
+                SOURCE_DIR="$(Build.ArtifactStagingDirectory)/drop"
+                if [ -d "$SOURCE_DIR" ]; then
+                  echo "Uploading files from $SOURCE_DIR to Blob Storage"
+                  az storage blob upload-batch --account-name $(AZURE_STORAGE_ACCOUNT_NAME) --auth-mode key -d '$web' -s "$SOURCE_DIR"
+                else
+                  echo "Error: Source directory $SOURCE_DIR does not exist."
+                  exit 1
+                fi
             displayName: 'Upload to Blob Storage'
 
           - script: |
